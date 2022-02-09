@@ -24,12 +24,13 @@ export default class Router {
     const routePath = window.location.hash;
     if (routePath === "" && this.defaultRoute) {
       this.defaultRoute.page.render();
+      return;
     }
 
     for (const routeInfo of this.routeTable) {
       if (routePath.indexOf(routeInfo.path) >= 0) {
         routeInfo.page.render();
-        break;
+        return;
       }
     }
   }
