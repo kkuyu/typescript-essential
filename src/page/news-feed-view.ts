@@ -29,15 +29,22 @@ export default class NewsFeedView extends View {
 
     this.store = store;
     this.api = new NewsFeedApi();
-
-    if (!this.store.hasFeed) {
-      this.store.setFeeds(this.api.getData());
-    }
   }
 
   render(): void {
     this.store.currentPage = Number(location.hash.substring(7) || 1);
 
+    if (!this.store.hasFeed) {
+      this.api.getData((feeds: NewsFeed[]) => {
+        this.store.setFeeds(feeds);
+        this.renderView();
+      });
+    }
+
+    this.renderView();
+  }
+
+  renderView = () => {
     for (let i = (this.store.currentPage - 1) * 10; i < this.store.currentPage * 10; i++) {
       const { id, title, comments_count, user, points, time_ago, read } = this.store.getFeed(i);
       this.addHtml(`<div class="p-6 ${read ? "bg-red-500" : "bg-white"} mt-6 rounded-lg shadow-md transition-colors duration-500 hover:bg-green-100">
@@ -64,5 +71,5 @@ export default class NewsFeedView extends View {
     this.setTemplateData("next_page", String(this.store.nextPage));
 
     this.updateView();
-  }
+  };
 }
