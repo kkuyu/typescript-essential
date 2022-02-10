@@ -48,7 +48,11 @@ export default class Store implements NewsStore {
     }));
   }
 
-  makeRead(id: number): void {
-    this.feeds.filter((feed: NewsFeed) => feed.id === id).map((feed: NewsFeed) => ({ ...feed, read: true }));
+  makeRead(id: number) {
+    const feed = this.feeds.find((feed: NewsFeed) => feed.id === id);
+
+    if (feed) {
+      feed.read = true;
+    }
   }
 }

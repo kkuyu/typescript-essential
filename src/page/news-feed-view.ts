@@ -35,7 +35,7 @@ export default class NewsFeedView extends View {
     this.store.currentPage = Number(location.hash.substring(7) || 1);
 
     if (!this.store.hasFeed) {
-      this.api.getData((feeds: NewsFeed[]) => {
+      this.api.getDataWithPromise((feeds: NewsFeed[]) => {
         this.store.setFeeds(feeds);
         this.renderView();
       });

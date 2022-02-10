@@ -13,25 +13,41 @@ function applyApiMixins(targetClass: any, baseClasses: any[]): void {
 }
 
 export class Api {
-  getRequest<AjaxResponse>(url: string, cb: (data: AjaxResponse) => void): void {
-    const ajax = new XMLHttpRequest();
-    ajax.open("GET", url, false);
-    ajax.addEventListener("load", () => {
-      cb(JSON.parse(ajax.response) as AjaxResponse);
+  getRequestWithXhr<AjaxResponse>(url: string, cb: (data: AjaxResponse) => void): void {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url, false);
+    xhr.addEventListener("load", () => {
+      cb(JSON.parse(xhr.response) as AjaxResponse);
     });
-    ajax.send();
+    xhr.send();
+  }
+
+  getRequestWithPromise<AjaxResponse>(url: string, cb: (data: AjaxResponse) => void): void {
+    fetch(url)
+      .then((response) => response.json())
+      .then(cb)
+      .catch(() => {
+        console.error("데이터를 불로오지 못했습니다.");
+      });
   }
 }
 
 class NewsFeedApi {
-  getData(cb: (data: NewsFeed[]) => void): void {
-    return this.getRequest<NewsFeed[]>(NEWS_URL, cb);
+  getDataWithXhr(cb: (data: NewsFeed[]) => void): void {
+    return this.getRequestWithXhr<NewsFeed[]>(NEWS_URL, cb);
+  }
+
+  getDataWithPromise(cb: (data: NewsFeed[]) => void): void {
+    return this.getRequestWithPromise<NewsFeed[]>(NEWS_URL, cb);
   }
 }
 
 class NewsDetailApi {
-  getData(id: string, cb: (data: NewsDetail) => void): void {
-    return this.getRequest<NewsDetail>(CONTENT_URL.replace("@id", id), cb);
+  getDataWithXhr(id: string, cb: (data: NewsDetail) => void): void {
+    return this.getRequestWithXhr<NewsDetail>(CONTENT_URL.replace("@id", id), cb);
+  }
+  getDataWithPromise(id: string, cb: (data: NewsDetail) => void): void {
+    return this.getRequestWithPromise<NewsDetail>(CONTENT_URL.replace("@id", id), cb);
   }
 }
 
